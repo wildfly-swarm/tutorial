@@ -52,8 +52,15 @@ public class WildFlyUtil {
 
     @PostConstruct
     void init() throws InitializationException {
-        if(!resolveFromSystemProps()) // system props first, JMX as fallback
-            resolveFromJMX();
+        try {
+            if(!resolveFromSystemProps()) // system props first, JMX as fallback
+                resolveFromJMX();
+        } catch (Exception e) {
+            System.out.println("--------------------------------");
+            System.out.println("WARN: We cannot resolve the IP address of this service instance. Make sure to pass '-Dswarm.bind.address=<PUBLIC_IP>'. " +
+                                       "Fallback to 'localhost'.");
+            System.out.println("--------------------------------");
+        }
 
         log.info("[INFO] Host and port resolved to: " + hostName + " : " + hostPort + "/" + hostSecurePort);
     }
