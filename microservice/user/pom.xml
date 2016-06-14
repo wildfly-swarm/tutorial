@@ -12,19 +12,34 @@
     <groupId>org.javaee7.wildfly.samples</groupId>
     <artifactId>user</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <name>user</name>
 
     <dependencies>
+
         <dependency>
-            <groupId>org.javaee7.wildfly.samples</groupId>
-            <artifactId>services</artifactId>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>jaxrs-jaxb</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.javaee7.wildfly.samples</groupId>
-            <artifactId>utils</artifactId>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>ejb</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>jaxrs-cdi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>topology-consul</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -36,6 +51,7 @@
                 <artifactId>wildfly-swarm-plugin</artifactId>
                 <version>${version.wildfly-swarm}</version>
                 <configuration>
+                    <mainClass>org.javaee7.wildfly.samples.everest.uzer.Main</mainClass>
                     <properties>
                         <swarm.context.path>${build.finalName}</swarm.context.path>
                         <swarm.port.offset>50</swarm.port.offset>
