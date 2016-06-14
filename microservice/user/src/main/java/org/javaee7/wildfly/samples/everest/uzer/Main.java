@@ -1,11 +1,12 @@
 package org.javaee7.wildfly.samples.everest.uzer;
 
+import java.net.URL;
+
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ClassLoaderAsset;
 import org.wildfly.swarm.Swarm;
 import org.wildfly.swarm.jaxrs.JAXRSArchive;
 import org.wildfly.swarm.topology.TopologyArchive;
-import org.wildfly.swarm.topology.consul.ConsulTopologyFraction;
 
 /**
  * @author Heiko Braun
@@ -14,12 +15,10 @@ import org.wildfly.swarm.topology.consul.ConsulTopologyFraction;
 public class Main {
     public static void main(String[] args) throws Exception {
 
-        Swarm swarm = new Swarm();
+        URL stageConfig = Main.class.getClassLoader().getResource("project-stages.yml");
 
-        swarm.fraction(new ConsulTopologyFraction(
-                System.getProperty("swarm.consul.url", "http://localhost:8500/")
-        ));
-
+        Swarm swarm = new Swarm()
+                .withStageConfig(stageConfig);
         swarm.start();
 
         JAXRSArchive archive = ShrinkWrap.create(JAXRSArchive.class);
@@ -28,7 +27,11 @@ public class Main {
         archive.addAllDependencies();
 
         // advertise service
-        archive.as(TopologyArchive.class).advertise("user");
+        archive.as(TopologyArchive.class).advertise(
+                swarm.stageConfig()
+                        .resolve("service.user.service-name")
+                        .getValue()
+        );
 
         swarm.deploy(archive);
 

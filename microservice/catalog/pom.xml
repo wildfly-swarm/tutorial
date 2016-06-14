@@ -52,7 +52,6 @@
                     <mainClass>org.javaee7.wildfly.samples.everest.catalog.Main</mainClass>
                     <properties>
                         <swarm.context.path>${build.finalName}</swarm.context.path>
-                        <swarm.port.offset>100</swarm.port.offset>
                     </properties>
                 </configuration>
                 <executions>

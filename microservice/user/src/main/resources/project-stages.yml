@@ -1,0 +1,20 @@
+service:
+    user:
+        service-name: "user-SNAPSHOT"
+swarm:
+    port:
+        offset: 0
+    consul:
+        url: "http://localhost:8500"
+---
+project:
+    stage: production
+service:
+    user:
+        service-name: "user"
+swarm:
+    port:
+        offset: 50
+    consul:
+        url: "http://localhost:8500"
+
