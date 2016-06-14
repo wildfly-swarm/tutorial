@@ -27,15 +27,18 @@ public class OrderService {
 
     @PostConstruct
     public void registerService() {
-        services.registerService(serviceName, getEndpoint());
+        endpoint = getEndpoint();
+        services.registerService(serviceName, endpoint);
     }
 
     @PreDestroy
     public void unregisterService() {
-        services.unregisterService(serviceName, getEndpoint());
+        services.unregisterService(serviceName, endpoint);
     }
 
     private String getEndpoint() {
         return "http://" + util.getHostName()+ ":" + util.getHostPort() + "/order/resources/order";
     }
+
+    private String endpoint;
 }

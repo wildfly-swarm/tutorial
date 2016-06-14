@@ -29,18 +29,54 @@ import java.lang.management.ManagementFactory;
 
 /**
  * @author Ryan McGuinness [rmcguinness@walmartlabs.com]
- *         Created: 6/19/15
+ * @author Heiko Braun
+ *
  */
 @Startup
 @Singleton
 public class WildFlyUtil {
+
     private static final Logger log = LoggerFactory.getLogger(WildFlyUtil.class);
-    private static String hostName = "localhost";
-    private static int hostPort = 8080;
-    private static int hostSecurePort = 8443;
+
+    private static final String JBOSS_BIND_ADDRESS = "jboss.bind.address";
+
+    private static final String SWARM_BIND_ADDRESS = "swarm.bind.address";
+
+    private static final String JBOSS_SOCKET_BINDING_PORT_OFFSET = "jboss.socket.binding.port-offset";
+
+    private static final String SWARM_PORT_OFFSET = "swarm.port.offset";
+
+    private String hostName = "localhost";
+    private int hostPort = 8080;
+    private int hostSecurePort = 8443;
 
     @PostConstruct
     void init() throws InitializationException {
+        if(!resolveFromSystemProps()) // system props first, JMX as fallback
+            resolveFromJMX();
+
+        log.info("[INFO] Host and port resolved to: " + hostName + " : " + hostPort + "/" + hostSecurePort);
+    }
+
+    private boolean resolveFromSystemProps() {
+        String bindAddress = System.getProperty(JBOSS_BIND_ADDRESS)!=null ?
+                System.getProperty(JBOSS_BIND_ADDRESS) : System.getProperty(SWARM_BIND_ADDRESS);
+
+        String portOffset = System.getProperty(JBOSS_SOCKET_BINDING_PORT_OFFSET)!=null ?
+                       System.getProperty(JBOSS_SOCKET_BINDING_PORT_OFFSET) : System.getProperty(SWARM_PORT_OFFSET, "0");
+
+        if(bindAddress!=null) {
+
+            Integer offset = Integer.valueOf(portOffset);
+            hostName = bindAddress;
+            hostPort = hostPort + offset;
+            hostSecurePort = hostSecurePort + offset;
+        }
+
+        return bindAddress!=null;
+    }
+
+    private void resolveFromJMX() {
         try {
             MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
 
@@ -49,15 +85,10 @@ public class WildFlyUtil {
             hostPort = (Integer) mBeanServer.getAttribute(http,"boundPort");
 
             ObjectName ws = new ObjectName("jboss.ws", "service", "ServerConfig");
-//            hostName = (String) mBeanServer.getAttribute(ws, "WebServiceHost");
-//            hostPort = (int) mBeanServer.getAttribute(ws, "WebServicePort");
             hostSecurePort = (int) mBeanServer.getAttribute(ws, "WebServiceSecurePort");
-            log.info("--> " + hostName + " : " + hostPort + "/" + hostSecurePort);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new InitializationException(e);
         }
-
     }
 
     public String getHostName() {

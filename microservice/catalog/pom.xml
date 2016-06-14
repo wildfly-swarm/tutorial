@@ -30,6 +30,26 @@
     <build>
         <finalName>catalog</finalName>
         <plugins>
+
+            <plugin>
+                <groupId>org.wildfly.swarm</groupId>
+                <artifactId>wildfly-swarm-plugin</artifactId>
+                <version>${version.wildfly-swarm}</version>
+                <configuration>
+                    <properties>
+                        <swarm.context.path>${build.finalName}</swarm.context.path>
+                        <swarm.port.offset>100</swarm.port.offset>
+                    </properties>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
