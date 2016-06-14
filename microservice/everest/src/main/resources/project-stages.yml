@@ -1,0 +1,19 @@
+service:
+    web:
+        service-name: "web-frontend-SNAPSHOT"
+swarm:
+    port:
+        offset: 5
+    consul:
+        url: "http://localhost:8500"
+---
+project:
+    stage: production
+service:
+    web:
+        service-name: "web-frontend"
+swarm:
+    port:
+        offset: 5
+    consul:
+        url: "http://localhost:8500"
