@@ -2,3 +2,7 @@
 target
 *.iml
 
+# Eclipse
+.project
+.classpath
+.settings/
